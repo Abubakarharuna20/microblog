@@ -30,7 +30,8 @@ public class Follower {
     @JoinColumn(name = "following_id")
     private User following;
 
-    private LocalDateTime timestamp;
+    @Column(name = "created_at", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime createdAt;
 
     // Getters and setters
 }

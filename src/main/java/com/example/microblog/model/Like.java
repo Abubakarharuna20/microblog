@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -30,7 +31,14 @@ public class Like {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 
     // Getters and setters
 }

@@ -23,7 +23,7 @@ public class PostController {
 
     private final PostService postService;
 
-    private static final String UPLOAD_DIR = "uploads/posts/";
+    private static final String UPLOAD_DIR = "src/main/resources/static/assets/uploads/posts/";
 
     public PostController(PostService postService) {
         this.postService = postService;

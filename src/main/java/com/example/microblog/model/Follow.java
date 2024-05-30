@@ -1,32 +1,33 @@
 package com.example.microblog.model;
 
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "follow")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Post {
+public class Follow {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "follower_id")
+    private Long followerId;
 
-    @Column(columnDefinition = "TEXT")
-    private String content;
-
-    @Column(name = "image", nullable = true, length = 255)
-    private String image;
+    @Column(name = "following_id")
+    private Long followingId;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -37,17 +38,10 @@ public class Post {
         createdAt = LocalDateTime.now();
     }
 
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    // Getters and setters
 
-    @Transient
-    public String getImagePath() {
-        if (image == null || id == null) return null;
-
-        return "/assets/uploads/posts/" + image;
+    public Follow(Long followerId, Long followingId) {
+        this.followerId = followerId;
+        this.followingId = followingId;
     }
-
-
-
 }

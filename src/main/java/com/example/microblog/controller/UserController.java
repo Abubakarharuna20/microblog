@@ -1,5 +1,6 @@
 package com.example.microblog.controller;
 
+import com.example.microblog.model.Comment;
 import com.example.microblog.model.FileUploadUtil;
 import com.example.microblog.model.Post;
 import com.example.microblog.model.User;
@@ -65,7 +66,7 @@ public class UserController {
         // Save the user to the database
         User savedUser = userService.saveUser(user);
 
-        String uploadDir = "user-photos/" + savedUser.getId();
+        String uploadDir = "static/assets/uploads/users/";
         FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -93,7 +94,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/api/username/{username}")
+    @GetMapping("/api/user/username/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
         User user = userService.getUserByUsername(username);
         if (user != null) {
@@ -101,6 +102,17 @@ public class UserController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/api/users/{userId}/followers")
+    public ResponseEntity<List<User>> getFollowers(@PathVariable Long userId) {
+        List<User> followers = userService.getFollowers(userId);
+        return ResponseEntity.ok(followers);
+    }
+
+    @GetMapping("/api/user/{userId}/posts")
+    public List<Post> getUserPosts(@PathVariable Long userId){
+        return userService.getUserPosts(userId);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.microblog.controller;
 
+import com.example.microblog.model.User;
 import com.example.microblog.service.FollowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,5 +28,16 @@ public class FollowController {
     }
 
     // Other endpoints for getting followers/following of a user, etc.
+    @GetMapping("/{userId}/followers")
+    public ResponseEntity<List<User>> getFollowers(@PathVariable Long userId) {
+        List<User> followers = followService.getFollowers(userId);
+        return ResponseEntity.ok(followers);
+    }
+
+    @GetMapping("/{userId}/following")
+    public ResponseEntity<List<User>> getFollowing(@PathVariable Long userId) {
+        List<User> following = followService.getFollowing(userId);
+        return ResponseEntity.ok(following);
+    }
 }
 
