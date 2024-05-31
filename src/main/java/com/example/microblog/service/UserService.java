@@ -2,7 +2,6 @@ package com.example.microblog.service;
 
 import com.example.microblog.model.*;
 import com.example.microblog.repository.FollowRepository;
-import com.example.microblog.repository.FollowerRepository;
 import com.example.microblog.repository.PostRepository;
 import com.example.microblog.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

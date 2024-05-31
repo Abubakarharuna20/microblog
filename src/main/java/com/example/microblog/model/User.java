@@ -56,14 +56,6 @@ public class User {
     @OneToMany(mappedBy = "user")
     List<Post> posts = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "following")
-//    @JsonIgnore
-//    private Set<Follower> followers;
-//
-//    @OneToMany(mappedBy = "follower")
-//    @JsonIgnore
-//    private Set<Follower> following;
-
     // Other fields, getters, and setters
     @OneToMany(mappedBy = "followerId")
     private List<Follow> following;

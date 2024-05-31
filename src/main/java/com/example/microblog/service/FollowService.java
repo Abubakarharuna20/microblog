@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FollowService {
@@ -34,10 +35,18 @@ public class FollowService {
 
     // Other methods for getting followers/following of a user, etc.
     public List<User> getFollowers(Long userId) {
-        return followRepository.findFollowersByUserId(userId);
+        List<Follow> follows = followRepository.findByFollowingId(userId);
+        return follows.stream()
+                .map(follow -> userRepository.findById(follow.getFollowerId()).orElse(null))
+                .filter(user -> user != null)
+                .collect(Collectors.toList());
     }
 
     public List<User> getFollowing(Long userId) {
-        return followRepository.findFollowingByUserId(userId);
+        List<Follow> follows = followRepository.findByFollowerId(userId);
+        return follows.stream()
+                .map(follow -> userRepository.findById(follow.getFollowingId()).orElse(null))
+                .filter(user -> user != null)
+                .collect(Collectors.toList());
     }
 }

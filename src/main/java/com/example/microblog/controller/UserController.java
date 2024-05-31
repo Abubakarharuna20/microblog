@@ -4,6 +4,7 @@ import com.example.microblog.model.Comment;
 import com.example.microblog.model.FileUploadUtil;
 import com.example.microblog.model.Post;
 import com.example.microblog.model.User;
+import com.example.microblog.service.FollowService;
 import com.example.microblog.service.PostService;
 import com.example.microblog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private FollowService followService;
 
     @Autowired
     private PostService postService;
@@ -66,7 +70,7 @@ public class UserController {
         // Save the user to the database
         User savedUser = userService.saveUser(user);
 
-        String uploadDir = "static/assets/uploads/users/";
+        String uploadDir = "src/main/resources/static/assets/uploads/posts/";
         FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -104,10 +108,17 @@ public class UserController {
         }
     }
 
-    @GetMapping("/api/users/{userId}/followers")
+
+    @GetMapping("/api/user/{userId}/followers")
     public ResponseEntity<List<User>> getFollowers(@PathVariable Long userId) {
-        List<User> followers = userService.getFollowers(userId);
+        List<User> followers = followService.getFollowers(userId);
         return ResponseEntity.ok(followers);
+    }
+
+    @GetMapping("/api/user/{userId}/following")
+    public ResponseEntity<List<User>> getFollowing(@PathVariable Long userId) {
+        List<User> following = followService.getFollowing(userId);
+        return ResponseEntity.ok(following);
     }
 
     @GetMapping("/api/user/{userId}/posts")

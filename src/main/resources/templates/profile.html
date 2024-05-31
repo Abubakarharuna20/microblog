@@ -210,14 +210,38 @@
         console.log(username);
         // Fetch user details
         var userId;
+
         function fetchUserDetails() {
             $.ajax({
                 url: `/api/user/username/${username}`,
                 method: 'GET',
                 success: function(user) {
-                    userId += user.id;
-
+                    userId = user.id;  // Assign userId correctly
                     displayUserDetails(user);
+
+                    // Fetch followers only after userId is set
+                    $.ajax({
+                        type: 'GET',
+                        url: `/api/user/${userId}/followers`, // Fetch followers
+                        success: function(followers) {
+                            displayFollowers(followers);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(xhr.responseText);
+                        }
+                    });
+
+                    // Fetch following only after userId is set
+                    $.ajax({
+                        type: 'GET',
+                        url: `/api/user/${userId}/following`, // Fetch following
+                        success: function(following) {
+                            displayFollowing(following);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(xhr.responseText);
+                        }
+                    });
                 },
                 error: function(error) {
                     console.error("Error fetching user details:", error);
@@ -225,40 +249,75 @@
             });
         }
 
+        function displayFollowers(followers) {
+            let totalFollowers = followers.length;
+            let followersImagesHtml = followers.slice(0, 5).map(function(follower) {
+                return `<img src="${follower.photoImagePath}" class="img-fluid rounded-circle" alt="follower-img">`;
+            }).join('');
+
+            // Update the HTML with follower details
+            $('.follower .follower-count').text(`${totalFollowers} Followers`);
+            $('.follower .follower-images').html(followersImagesHtml);
+        }
+
+        function displayFollowing(following) {
+            let totalFollowing = following.length;
+            let followingImagesHtml = following.slice(0, 5).map(function(followingUser) {
+                return `<img src="${followingUser.photoImagePath}" class="img-fluid rounded-circle" alt="following-img">`;
+            }).join('');
+
+            // Update the HTML with following details
+            $('.following .following-count').text(`${totalFollowing} Following`);
+            $('.following .following-images').html(followingImagesHtml);
+        }
+
         // Display user details
         function displayUserDetails(user) {
             if (user === null) {
-                // If no users are returned, display a message
                 $('#profile-container').append('<p class="text-muted">No users to display.</p>');
                 $('#username').append('<p class="text-muted">User undefined.</p>');
+                return;
             }
-            let userHtml = `
-            <div class="d-flex align-items-center px-3 pt-3">
-                <img src="${user.photoImagePath}" class="img-fluid rounded-circle" alt="profile-img">
-                <div class="ms-3">
-                    <h6 class="mb-0 d-flex align-items-start text-body fs-6 fw-bold">${user.name}
-                        <span class="ms-2 material-icons bg-primary p-0 md-16 fw-bold text-white rounded-circle ov-icon">done</span>
-                    </h6>
-                    <p class="text-muted mb-0">@${user.username}</p>
-                </div>
-                <div class="ms-auto btn-group" role="group" aria-label="Basic checkbox toggle button group">
-                    <input type="checkbox" class="btn-check" id="btncheck1">
-                    <label class="btn btn-outline-primary btn-sm px-3 rounded-pill" for="btncheck1">
-                        <span class="follow">+ Follow</span>
-                        <span class="following d-none">Following</span>
-                    </label>
-                </div>
-            </div>
-            <div class="p-3">
-                 ${user.bio !== null ? `<p class="mb-2 fs-6">${user.bio}</p>` : ''}
-                <p class="d-flex align-items-center mb-3">
-                    <span class="material-icons me-2 rotate-320 text-muted md-16">link</span>
-                    <a href="/profile/@${user.username}" class="text-decoration-none">profile/@${user.username}</a>
-                    <span class="material-icons me-2 text-muted md-16 ms-4">calendar_today</span>
-                    <span>Joined on ${new Date(user.createdAt).toLocaleDateString()}</span>
-                </p>
 
-            </div>`;
+            let userHtml = `
+                <div class="d-flex align-items-center px-3 pt-3">
+                    <img src="${user.photoImagePath}" class="img-fluid rounded-circle" alt="profile-img">
+                    <div class="ms-3">
+                        <h6 class="mb-0 d-flex align-items-start text-body fs-6 fw-bold">${user.name}
+                            <span class="ms-2 material-icons bg-primary p-0 md-16 fw-bold text-white rounded-circle ov-icon">done</span>
+                        </h6>
+                        <p class="text-muted mb-0">@${user.username}</p>
+                    </div>
+                    <div class="ms-auto btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                        <input type="checkbox" class="btn-check" id="btncheck1">
+                        <label class="btn btn-outline-primary btn-sm px-3 rounded-pill" for="btncheck1">
+                            <span class="follow">+ Follow</span>
+                            <span class="following d-none">Following</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="p-3">
+                     ${user.bio !== null ? `<p class="mb-2 fs-6">${user.bio}</p>` : ''}
+                    <p class="d-flex align-items-center mb-3">
+                        <span class="material-icons me-2 rotate-320 text-muted md-16">link</span>
+                        <a href="/profile/@${user.username}" class="text-decoration-none">profile/@${user.username}</a>
+                        <span class="material-icons me-2 text-muted md-16 ms-4">calendar_today</span>
+                        <span>Joined on ${new Date(user.createdAt).toLocaleDateString()}</span>
+                    </p>
+                    <div class="d-flex followers">
+                        <div class="follower">
+                             <p class="follower-count">0 Followers</p>
+                             <div class="follower-images d-flex">
+                             </div>
+                        </div>
+                        <div class="ms-5 ps-5 following">
+                            <p class="following-count">0 Following</p>
+                            <div class="following-images d-flex">
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
             $('#profile-container').html(userHtml);
             $('#username').text(user.name);
 
@@ -339,7 +398,7 @@
                 fetchCommentsForPost(post.id);
                 loadLikes(post.id);
             });
-            $('#posts-container').html(postsHtml);
+            $('#posts-container').html(postHtml);
         }
 
         // Function to load likes for a post
