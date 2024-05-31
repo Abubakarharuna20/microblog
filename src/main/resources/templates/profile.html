@@ -124,7 +124,7 @@
                                 <a href="/" class="nav-link active"><span class="material-icons me-3">house</span> <span>Feed</span></a>
                             </li>
                             <li class="nav-item">
-                                <a href="/profile" class="nav-link"><span class="material-icons me-3">account_circle</span> <span>Profile</span></a>
+                                <a href="/edit-profile" class="nav-link"><span class="material-icons me-3">account_circle</span> <span>Profile</span></a>
                             </li>
                             <li class="nav-item logoutBtn">
                                 <a href="#" class="nav-link"><span class="material-icons me-3">logout</span> <span>Logout</span></a>
@@ -132,9 +132,9 @@
                         </ul>
                     </div>
                     <!-- Card for user details -->
-                    <div class="user-card card" style="display: none;">
-                        <div class="card-body">
-                            <img class="user-avatar img-fluid rounded-circle user-img" width="50" src="#" alt="User Profile">
+                    <div class="me-2 bg-white shadow-sm rounded-4 p-2 user-list-item d-flex flex-row gap-3 justify-content-center my-2 user-card card" style="display: none;">
+                        <img class="user-avatar img-fluid rounded-circle user-img" width="30" src="#" alt="User Profile">
+                        <div class="">
                             <h5 class="user-full-name card-text"></h5>
                             <p class="user-name card-title"></p>
                         </div>
@@ -156,7 +156,7 @@
                                 <a href="/" class="nav-link active"><span class="material-icons me-3">house</span> <span>Feed</span></a>
                             </li>
                             <li class="nav-item">
-                                <a href="/profile" class="nav-link"><span class="material-icons me-3">account_circle</span> <span>Profile</span></a>
+                                <a href="/edit-profile" class="nav-link"><span class="material-icons me-3">account_circle</span> <span>Profile</span></a>
                             </li>
                             <li class="nav-item logoutBtn">
                                 <a href="#" class="nav-link"><span class="material-icons me-3">logout</span> <span>Logout</span></a>
@@ -164,9 +164,9 @@
                         </ul>
                     </div>
                     <!-- Card for user details -->
-                    <div class="user-card card" style="display: none;">
-                        <div class="card-body">
-                            <img class="user-avatar img-fluid rounded-circle user-img" width="50" src="#" alt="User Profile">
+                    <div class="me-2 bg-white shadow-sm rounded-4 p-2 user-list-item d-flex flex-row gap-3 justify-content-center my-2 user-card card" style="display: none;">
+                        <img class="user-avatar img-fluid rounded-circle user-img" width="30" src="#" alt="User Profile">
+                        <div class="">
                             <h5 class="user-full-name card-text"></h5>
                             <p class="user-name card-title"></p>
                         </div>
@@ -204,6 +204,84 @@
 
 <script src="/assets/vendor/slick/slick/slick.min.js" type="text/javascript"></script>
 <script>
+    const userDetails = JSON.parse(localStorage.getItem('userDetails'));
+    if (userDetails===null) {
+        alert("logout Successfully");
+        window.location.href = "/login";
+    }else{
+        var userId = userDetails.id;
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const fileInput = document.getElementById('fileInput');
+        const uploadButton = document.getElementById('uploadButton');
+
+        // Function to trigger file input click event
+        function triggerFileInput() {
+            fileInput.click();
+        }
+
+        // Add event listener to the upload button
+        uploadButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            triggerFileInput();
+        });
+
+        // Add event listener to the file input to handle file selection
+        fileInput.addEventListener('change', function () {
+            // Handle file selection here
+            console.log('File selected:', fileInput.files[0]);
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const userCards = document.querySelectorAll('.user-card');
+        const signInButtons = document.querySelectorAll('.sign-in-button');
+
+        // Function to check if user details exist in local storage
+        function checkUserDetails() {
+            const userDetails = JSON.parse(localStorage.getItem('userDetails'));
+            if (userDetails) {
+                // Loop through each user card
+                userCards.forEach(function (userCard) {
+                    // Display user card
+                    userCard.style.display = 'block';
+                    // Update user card with user details
+                    const userAvatarElements = userCard.querySelectorAll('.user-avatar');
+                    userAvatarElements.forEach(function (userAvatar) {
+                        userAvatar.src = userDetails.photoImagePath;
+                    });
+                    const userNameElements = userCard.querySelectorAll('.user-name');
+                    userNameElements.forEach(function (userName) {
+                        userName.textContent = userDetails.username;
+                    });
+                    const userFullNameElements = userCard.querySelectorAll('.user-full-name');
+                    userFullNameElements.forEach(function (userFullName) {
+                        userFullName.textContent = userDetails.name;
+                    });
+                });
+                // Loop through each sign-in button
+                signInButtons.forEach(function (signInButton) {
+                    // Hide Sign In button
+                    signInButton.style.display = 'none';
+                });
+            } else {
+                // Loop through each user card
+                userCards.forEach(function (userCard) {
+                    // Hide user card
+                    userCard.style.display = 'none';
+                });
+                // Loop through each sign-in button
+                signInButtons.forEach(function (signInButton) {
+                    // Display Sign In button
+                    signInButton.style.display = 'block';
+                });
+            }
+        }
+
+        // Call the function to check user details when the page loads
+        checkUserDetails();
+    });
+
     $(document).ready(function() {
         const pathArray = window.location.pathname.split('/');
         const username = pathArray[2].substring(1); // Extracts username from URL
@@ -342,7 +420,7 @@
             });
         }
 
-// Display user posts
+        // Display user posts
         function displayUserPosts(posts) {
             posts.forEach(function(post) {
                 var postHtml = `
@@ -562,7 +640,7 @@
             });
         }
 
-// Unfollow user
+        // Unfollow user
         function unfollowUser(followerId, followingId) {
             $.ajax({
                 url: `/api/follows/unfollow`,
@@ -579,7 +657,7 @@
             });
         }
 
-// Update follow button state
+        // Update follow button state
         function updateFollowButton(isFollowing) {
             if (isFollowing) {
                 $('.follow').addClass('d-none');
@@ -590,7 +668,7 @@
             }
         }
 
-// Event listener for follow/unfollow button
+        // Event listener for follow/unfollow button
         $(document).on('change', '#btncheck1', function() {
             if ($(this).is(':checked')) {
                 followUser(userId, userId);  // Replace with actual followerId and followingId
@@ -599,7 +677,13 @@
             }
         });
 
-
+        $('.logoutBtn a').on('click', function(event) {
+            event.preventDefault();
+            // Clear user details from localStorage
+            localStorage.removeItem('userDetails');
+            // Redirect to the logout endpoint or homepage
+            window.location.href = "/login"; // Change to your actual logout endpoint if necessary
+        });
 
     });
 </script>

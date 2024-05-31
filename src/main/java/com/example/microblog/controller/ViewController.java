@@ -41,10 +41,15 @@ public class ViewController {
         User user = userService.getUserByUsername(username);
         if (user == null) {
             // Handle user not found, maybe redirect to an error page or return 404
-            return "error/404";
+            return "error";
         }
         model.addAttribute("user", user);
         return "profile"; // Return your profile page here
+    }
+
+    @GetMapping("/edit-profile")
+    public String viewEditProfilePage() {
+        return "edit-profile"; // Return the name of the Thymeleaf template
     }
 
 }

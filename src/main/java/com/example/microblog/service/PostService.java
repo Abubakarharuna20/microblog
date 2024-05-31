@@ -23,7 +23,7 @@ public class PostService {
     }
 
     public List<Post> getAllPost(){
-        return postRepository.findAll();
+        return postRepository.findAllByOrderByCreatedAtDesc();
     }
 
     public void deletePostById(Long id){

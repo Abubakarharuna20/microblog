@@ -7,6 +7,8 @@ import com.example.microblog.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +23,6 @@ public class UserService {
 
     @Autowired
     private PostRepository postRepository;
-
 
     public User User(String username, String password) {
         // Implement your logic to fetch the user from the database based on username and password
@@ -66,30 +67,28 @@ public class UserService {
         return postRepository.findPostByUser_Id(userId);
     }
 
+    public boolean checkPassword(User user, String rawPassword) {
+        String encryptedPassword = encryptPassword(rawPassword);
+        return user.getPassword().equals(encryptedPassword);
+    }
+
+    public void updatePassword(User user, String newPassword) {
+        user.setPassword(encryptPassword(newPassword));
+        userRepository.save(user);
+    }
+
+    public String encryptPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error encrypting password", e);
+        }
+    }
 
 }
-
-//import com.example.blog.model.User;
-//import com.example.blog.repository.UserRepository;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//@Service
-//public class UserService {
-//
-//    @Autowired
-//    private UserRepository userRepository;
-//
-//    public User findByUsername(String username) {
-//        return userRepository.findByUsername(username);
-//    }
-//
-//    public User User(String username, String password) {
-//        return userRepository.findByUsernameAndPassword(username, password);
-//    }
-//
-//    public User saveUser(User user) {
-//        userRepository.save(user);
-//        return user;
-//    }
-//}

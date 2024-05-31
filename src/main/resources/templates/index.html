@@ -93,7 +93,7 @@
                                 <a href="/" class="nav-link active"><span class="material-icons me-3">house</span> <span>Feed</span></a>
                             </li>
                             <li class="nav-item">
-                                <a href="/profile" class="nav-link"><span class="material-icons me-3">account_circle</span> <span>Profile</span></a>
+                                <a href="/edit-profile" class="nav-link"><span class="material-icons me-3">account_circle</span> <span>Profile</span></a>
                             </li>
                             <li class="nav-item logoutBtn">
                                 <a href="#" class="nav-link"><span class="material-icons me-3">logout</span> <span>Logout</span></a>
@@ -101,9 +101,9 @@
                         </ul>
                     </div>
                     <!-- Card for user details -->
-                    <div class="user-card card" style="display: none;">
-                        <div class="card-body">
-                            <img class="user-avatar img-fluid rounded-circle user-img" width="50" src="#" alt="User Profile">
+                    <div class="me-2 bg-white shadow-sm rounded-4 p-2 user-list-item d-flex flex-row gap-3 justify-content-center my-2 user-card card" style="display: none;">
+                        <img class="user-avatar img-fluid rounded-circle user-img" width="30" src="#" alt="User Profile">
+                        <div class="">
                             <h5 class="user-full-name card-text"></h5>
                             <p class="user-name card-title"></p>
                         </div>
@@ -125,7 +125,7 @@
                                 <a href="/" class="nav-link active"><span class="material-icons me-3">house</span> <span>Feed</span></a>
                             </li>
                             <li class="nav-item">
-                                <a href="/profile" class="nav-link"><span class="material-icons me-3">account_circle</span> <span>Profile</span></a>
+                                <a href="/edit-profile" class="nav-link"><span class="material-icons me-3">account_circle</span> <span>Profile</span></a>
                             </li>
                             <li class="nav-item logoutBtn">
                                 <a href="#" class="nav-link"><span class="material-icons me-3">logout</span> <span>Logout</span></a>
@@ -133,9 +133,9 @@
                         </ul>
                     </div>
                     <!-- Card for user details -->
-                    <div class="user-card card" style="display: none;">
-                        <div class="card-body">
-                            <img class="user-avatar img-fluid rounded-circle user-img" width="50" src="#" alt="User Profile">
+                    <div class="me-2 bg-white shadow-sm rounded-4 p-2 user-list-item d-flex flex-row gap-3 justify-content-center my-2 user-card card" style="display: none;">
+                        <img class="user-avatar img-fluid rounded-circle user-img" width="30" src="#" alt="User Profile">
+                        <div class="">
                             <h5 class="user-full-name card-text"></h5>
                             <p class="user-name card-title"></p>
                         </div>
@@ -248,7 +248,7 @@
                     });
                     const userNameElements = userCard.querySelectorAll('.user-name');
                     userNameElements.forEach(function (userName) {
-                        userName.textContent = userDetails.username;
+                        userName.textContent = '@'+userDetails.username;
                     });
                     const userFullNameElements = userCard.querySelectorAll('.user-full-name');
                     userFullNameElements.forEach(function (userFullName) {

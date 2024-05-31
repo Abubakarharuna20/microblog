@@ -13,7 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.util.StringUtils;
+
+import java.io.File;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +61,9 @@ public class UserController {
             );
         }
 
+        // Encrypt the password using SHA-256
+        String encryptedPassword = encryptPassword(password);
+
         // Save the user's photo to the file system
         String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 
@@ -64,7 +71,7 @@ public class UserController {
         User user = new User();
         user.setName(name);
         user.setUsername(username);
-        user.setPassword(password);
+        user.setPassword(encryptedPassword);  // Set the encrypted password
         user.setPhoto(fileName);
 
         // Save the user to the database
@@ -76,6 +83,20 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 Map.of("status", "success", "message", "User signed up successfully")
         );
+    }
+
+    public String encryptPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error encrypting password", e);
+        }
     }
 
     @PostMapping("/logout")
@@ -97,6 +118,76 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/api/user/{userId}")
+    public ResponseEntity<Object> updateUser(
+            @PathVariable Long userId,
+            @RequestParam(value = "photo", required = false) MultipartFile multipartFile,
+            @RequestParam("username") String username,
+            @RequestParam("name") String name,
+            @RequestParam("bio") String bio) throws IOException {
+
+        User existingUser = userService.getUserById(userId);
+        if (existingUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Update user details
+        existingUser.setName(name);
+        existingUser.setUsername(username);
+        existingUser.setBio(bio);
+
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            // Delete the previous photo if it exists
+            if (existingUser.getPhoto() != null && !existingUser.getPhoto().isEmpty()) {
+                String oldPhotoPath = "src/main/resources/static/assets/uploads/users/" + existingUser.getPhoto();
+                File oldPhotoFile = new File(oldPhotoPath);
+                if (oldPhotoFile.exists()) {
+                    oldPhotoFile.delete();
+                }
+            }
+
+            // Save the new user's photo to the file system
+            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+            existingUser.setPhoto(fileName);
+
+            String uploadDir = "src/main/resources/static/assets/uploads/users/";
+            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+        }
+
+        // Save the updated user to the database
+        userService.saveUser(existingUser);
+
+        return ResponseEntity.ok(Map.of("status", "success", "message", "User updated successfully", "data", existingUser));
+    }
+
+    @PutMapping("/api/user/{userId}/change-password")
+    public ResponseEntity<Object> changePassword(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> passwordMap) {
+
+        String oldPassword = passwordMap.get("oldPassword");
+        String newPassword = passwordMap.get("newPassword");
+        String confirmPassword = passwordMap.get("confirmPassword");
+
+        if (!newPassword.equals(confirmPassword)) {
+            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", "New passwords do not match"));
+        }
+
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("status", "error", "message", "User not found"));
+        }
+
+        if (!userService.checkPassword(user, oldPassword)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("status", "error", "message", "Old password is incorrect"));
+        }
+
+        userService.updatePassword(user, newPassword);
+
+        return ResponseEntity.ok(Map.of("status", "success", "message", "Password changed successfully"));
+    }
+
 
     @GetMapping("/api/user/username/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) {

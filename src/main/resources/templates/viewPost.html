@@ -68,7 +68,7 @@
                                 <a href="/" class="nav-link active"><span class="material-icons me-3">house</span> <span>Feed</span></a>
                             </li>
                             <li class="nav-item">
-                                <a href="/profile" class="nav-link"><span class="material-icons me-3">account_circle</span> <span>Profile</span></a>
+                                <a href="/edit-profile" class="nav-link"><span class="material-icons me-3">account_circle</span> <span>Profile</span></a>
                             </li>
                             <li class="nav-item logoutBtn">
                                 <a href="#" class="nav-link"><span class="material-icons me-3">logout</span> <span>Logout</span></a>
@@ -76,9 +76,9 @@
                         </ul>
                     </div>
                     <!-- Card for user details -->
-                    <div class="user-card card" style="display: none;">
-                        <div class="card-body">
-                            <img class="user-avatar img-fluid rounded-circle user-img" width="50" src="#" alt="User Profile">
+                    <div class="me-2 bg-white shadow-sm rounded-4 p-2 user-list-item d-flex flex-row gap-3 justify-content-center my-2 user-card card" style="display: none;">
+                        <img class="user-avatar img-fluid rounded-circle user-img" width="30" src="#" alt="User Profile">
+                        <div class="">
                             <h5 class="user-full-name card-text"></h5>
                             <p class="user-name card-title"></p>
                         </div>
@@ -100,7 +100,7 @@
                                 <a href="/" class="nav-link active"><span class="material-icons me-3">house</span> <span>Feed</span></a>
                             </li>
                             <li class="nav-item">
-                                <a href="/profile" class="nav-link"><span class="material-icons me-3">account_circle</span> <span>Profile</span></a>
+                                <a href="/edit-profile" class="nav-link"><span class="material-icons me-3">account_circle</span> <span>Profile</span></a>
                             </li>
                             <li class="nav-item logoutBtn">
                                 <a href="#" class="nav-link"><span class="material-icons me-3">logout</span> <span>Logout</span></a>
@@ -108,9 +108,9 @@
                         </ul>
                     </div>
                     <!-- Card for user details -->
-                    <div class="user-card card" style="display: none;">
-                        <div class="card-body">
-                            <img class="user-avatar img-fluid rounded-circle user-img" width="50" src="#" alt="User Profile">
+                    <div class="me-2 bg-white shadow-sm rounded-4 p-2 user-list-item d-flex flex-row gap-3 justify-content-center my-2 user-card card" style="display: none;">
+                        <img class="user-avatar img-fluid rounded-circle user-img" width="30" src="#" alt="User Profile">
+                        <div class="">
                             <h5 class="user-full-name card-text"></h5>
                             <p class="user-name card-title"></p>
                         </div>
@@ -148,11 +148,14 @@
 
 <script src="/assets/vendor/slick/slick/slick.min.js" type="text/javascript"></script>
 <script>
-    var url = window.location.href;
-    var postId = url.substring(url.lastIndexOf("/") + 1);
-    console.log(postId);
+
     const userDetails = JSON.parse(localStorage.getItem('userDetails'));
-    const userId = userDetails.id;
+    if (userDetails===null) {
+        alert("logout Successfully");
+        window.location.href = "/login";
+    }else{
+        var userId = userDetails.id;
+    }
     document.addEventListener('DOMContentLoaded', function () {
         const fileInput = document.getElementById('fileInput');
         const uploadButton = document.getElementById('uploadButton');
@@ -223,6 +226,11 @@
         // Call the function to check user details when the page loads
         checkUserDetails();
     });
+
+    var url = window.location.href;
+    var postId = url.substring(url.lastIndexOf("/") + 1);
+    console.log(postId);
+
 
     // GET List Of Users
     function fetchUser() {
@@ -609,6 +617,14 @@
 
         // Call the fetchUsers function to populate the user container initially
         fetchUsers();
+    });
+
+    $('.logoutBtn a').on('click', function(event) {
+        event.preventDefault();
+        // Clear user details from localStorage
+        localStorage.removeItem('userDetails');
+        // Redirect to the logout endpoint or homepage
+        window.location.href = "/login"; // Change to your actual logout endpoint if necessary
     });
 
 
