@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LikeService {
@@ -28,6 +29,13 @@ public class LikeService {
         return likeRepository.findByPostId(postId);
     }
 
+    public List<Post> getPostsLikedByUser(Long userId) {
+        List<Like> likes = likeRepository.findByUserId(userId);  // Fetch likes by user ID
+        return likes.stream()
+                .map(Like::getPost)  // Extract posts from likes
+                .collect(Collectors.toList());
+    }
+
 
     public void likePost(Long userId, Long postId) {
         // Check if the post exists
@@ -36,18 +44,11 @@ public class LikeService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Post not found with id: " + postId));
 
-        // Check if the user has already liked the post
-//        boolean alreadyLiked = likeRepository.existsByUserIdAndPostId(userId, postId);
-//        if (alreadyLiked) {
-//            throw new RuntimeException("User already liked this post");
-//        }
 
         // Create a new like
         Like like = new Like();
         like.setPost(post);
         like.setUser(user);
-        // Assuming you have a User entity and can set the user for the like
-        // like.setUser(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id: " + userId)));
 
         likeRepository.save(like);
     }

@@ -5,6 +5,7 @@ import com.example.microblog.model.FileUploadUtil;
 import com.example.microblog.model.Post;
 import com.example.microblog.model.User;
 import com.example.microblog.service.FollowService;
+import com.example.microblog.service.LikeService;
 import com.example.microblog.service.PostService;
 import com.example.microblog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class UserController {
 
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private LikeService likeService;
 
     @PostMapping("/api/login")
     public ResponseEntity<?> login(@RequestBody User user) {
@@ -216,5 +220,12 @@ public class UserController {
     public List<Post> getUserPosts(@PathVariable Long userId){
         return userService.getUserPosts(userId);
     }
+
+    @GetMapping("/api/user/{userId}/liked-posts")
+    public ResponseEntity<List<Post>> getPostsLikedByUser(@PathVariable Long userId) {
+        List<Post> likedPosts = likeService.getPostsLikedByUser(userId);
+        return ResponseEntity.ok(likedPosts);
+    }
+
 
 }
