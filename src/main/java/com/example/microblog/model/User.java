@@ -41,6 +41,10 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
+    public User(Long id, String name, String username, String bio, String photo, LocalDateTime createdAt) {
+
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

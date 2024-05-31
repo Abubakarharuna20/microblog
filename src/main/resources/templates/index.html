@@ -29,7 +29,7 @@
     <em>Enable Dark Mode!</em>
 </div>
 <div class="web-none d-flex align-items-center px-3 pt-3">
-    <a href="index.html" class="text-decoration-none">
+    <a href="/" class="text-decoration-none">
         <img src="/assets/img/logo.png" class="img-fluid logo-mobile" alt="brand-logo">
     </a>
     <button class="ms-auto btn btn-primary ln-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
@@ -65,7 +65,7 @@
 <!--                                    <a href="#" class="text-dark text-decoration-none material-icons">east</a>-->
                                 </div>
 
-                                <div class="account-slider justify-content-start" id="userContainer">
+                                <div class="account-slider" id="userContainer">
                                 </div>
 
                                 <div class="pt-4 feeds" id="postsContainer">
@@ -248,12 +248,18 @@
                     });
                     const userNameElements = userCard.querySelectorAll('.user-name');
                     userNameElements.forEach(function (userName) {
-                        userName.textContent = '@'+userDetails.username;
+                        userName.textContent = '@' + userDetails.username;
                     });
                     const userFullNameElements = userCard.querySelectorAll('.user-full-name');
                     userFullNameElements.forEach(function (userFullName) {
                         userFullName.textContent = userDetails.name;
                     });
+
+                    // Wrap the user card with an anchor tag to make it a profile link
+                    const profileLink = document.createElement('a');
+                    profileLink.href = '/profile/@' + userDetails.username; // Adjust the profile link URL
+                    profileLink.appendChild(userCard.cloneNode(true)); // Clone the user card content
+                    userCard.parentNode.replaceChild(profileLink, userCard); // Replace the original user card with the profile link
                 });
                 // Loop through each sign-in button
                 signInButtons.forEach(function (signInButton) {
@@ -579,7 +585,7 @@
                         </button>`;
 
                             var userHtml = `
-                        <div class="account-item" style="width: 207px;">
+                        <div class="account-item">
                             <div class="me-2 bg-white shadow-sm rounded-4 p-3 user-list-item d-flex justify-content-center my-2">
                                 <div class="text-center">
                                     <div class="position-relative d-flex justify-content-center">

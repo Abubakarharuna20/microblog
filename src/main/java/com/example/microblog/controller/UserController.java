@@ -41,7 +41,8 @@ public class UserController {
 
     @PostMapping("/api/login")
     public ResponseEntity<?> login(@RequestBody User user) {
-        User oauthUser = userService.User(user.getUsername(), user.getPassword());
+        String encryptedPassword = encryptPassword(user.getPassword());
+        User oauthUser = userService.User(user.getUsername(), encryptedPassword);
 
         if (Objects.nonNull(oauthUser)) {
             return ResponseEntity.ok()
@@ -81,7 +82,7 @@ public class UserController {
         // Save the user to the database
         User savedUser = userService.saveUser(user);
 
-        String uploadDir = "src/main/resources/static/assets/uploads/posts/";
+        String uploadDir = "src/main/resources/static/assets/uploads/users/";
         FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(

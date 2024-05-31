@@ -1,5 +1,5 @@
-@import '/assets/fonts/dm-sans/dm-sans.css';
-@import '/assets/fonts/gilroy/Gilroy.css';
+@import 'fonts/dm-sans/dm-sans.css';
+@import 'fonts/gilroy/Gilroy.css';
 body {
     font-size: 13px;
     font-family: dm sans, sans-serif;
